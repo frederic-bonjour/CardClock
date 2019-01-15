@@ -1,6 +1,7 @@
 #include "Clock.h"
 #include "GraphicContext.h"
 
+#define TONE_PIN 5
 
 extern GraphicContext* GC;
 
@@ -29,8 +30,39 @@ bool Clock::run() {
       }
     }
 
+    checkAlaram();
+
     return true;
   }
 
   return false;
+}
+
+
+void Clock::checkAlaram() {
+  if (alarmH == h && alarmM == m) {
+    tone(TONE_PIN, 500); // FIME
+  }
+}
+
+
+void Clock::deactivateAlarm() {
+  alarmActivated = false;
+}
+
+
+void Clock::stopAlarm() {
+  noTone(TONE_PIN);
+}
+
+
+void Clock::activateAlarm() {
+  alarmActivated = true;
+}
+
+
+void Clock::setAlarm(byte ah, byte am) {
+  alarmH = ah;
+  alarmM = am;
+  activateAlarm();
 }

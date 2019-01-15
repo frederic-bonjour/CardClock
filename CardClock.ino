@@ -46,21 +46,33 @@ void setup() {
 }
 
 
+/**
+ * Applies the given action (badge ID).
+ */
 void applyBadge(String action) {
 
   // ALARM
   
   if (action.startsWith("alarm:")) {
-    String time = action.substring(6);
-    int p = time.indexOf("h");
-    if (p > -1) {
-      clock.setAlarm(
-        time.substring(0, p).toInt(),
-        time.substring(p + 1).toInt()
-      );
+    String param = action.substring(6);
+    if (param == "activate") {
+      clock.activateAlarm();
+    } else if (param == "deactivate") {
+      clock.deactivateAlarm();
+    } else if (param == "view") {
+      // TODO
+    } else {
+      int p = param.indexOf(":");
+      if (p > -1) {
+        clock.setAlarm(
+          param.substring(0, p).toInt(),
+          param.substring(p + 1).toInt()
+        );
+      }
     }
   }
-  
+
+  // TODO: timer, dessins, ...  
 }
 
 

@@ -23,11 +23,19 @@ GraphicContext::GraphicContext(byte w, byte h) {
   height = h;
   font = CondensedFont::get();
   
-  // Wake all the MAX72XX up.   
+  // Wake all the MAX72XX up.
   for (byte b=0; b<DISPLAY_COUNT; b++) {
     D.shutdown(b, false);
-    D.setIntensity(b, 8);
+    D.setIntensity(b, intensity);
     D.clearDisplay(b);
+  }
+}
+
+
+GraphicContext* GraphicContext::setIntensity(Intensity i) {
+  intensity = i;
+  for (byte b=0; b<DISPLAY_COUNT; b++) {
+    D.setIntensity(b, intensity);
   }
 }
 

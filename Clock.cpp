@@ -3,14 +3,17 @@
 
 #define TONE_PIN 5
 
-extern GraphicContext* GC;
+
+void Clock::display(GraphicContext* gc) {
+  gc->clear();
+  gc->text(13, 0, String(h), RIGHT);
+  gc->text(19, 0, m < 10 ? (String("0") + m) : String(m), LEFT);
+  gc->text(14, 0, ":");
+}
 
 
-void Clock::display() {
-  GC->clear();
-  GC->text(13, 0, h < 10 ? (String("0") + h) : String(h), RIGHT);
-  GC->text(19, 0, m < 10 ? (String("0") + m) : String(m), LEFT);
-  GC->text(14, 0, ":");
+void Clock::overlay(GraphicContext* gc) {
+  gc->setPixel(0, 0, alarmActivated);
 }
 
 

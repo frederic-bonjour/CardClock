@@ -4,10 +4,12 @@
 
 #include <Arduino.h>
 #include "App.h"
+#include "GraphicContext.h"
+
 
 class Clock : public App {
 
-  byte h = 16;
+  byte h = 1;
   byte m = 58;
 
   byte alarmH = 17;
@@ -18,7 +20,8 @@ class Clock : public App {
 
   public:
     bool run();
-    void display();
+    void display(GraphicContext* gc);
+    void overlay(GraphicContext* gc);
 
     void activateAlarm();
     void setAlarm(byte ah, byte am);

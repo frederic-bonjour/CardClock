@@ -21,12 +21,17 @@ GraphicContext *GC;
 
 #include "App.h"
 #include "Clock.h"
+#include "Timer.h"
 
 
 App* currentApp;
 
 // Apps
 Clock clock;
+Timer timer;
+
+#define APPS_COUNT 2
+App* apps[APPS_COUNT] = { &clock, &timer };
 
 
 /**
@@ -42,7 +47,9 @@ void setup() {
   mfrc522.PCD_DumpVersionToSerial();
 
   currentApp = &clock;
-  currentApp->display();
+  currentApp->display(GC);
+
+  timer.set(20);
 }
 
 
@@ -51,10 +58,11 @@ void setup() {
  */
 void applyBadge(String action) {
 
-  // ALARM
-  
-  if (action.startsWith("alarm:")) {
-    String param = action.substring(6);
+  if (action.startsWith("ALM:")) {
+    
+    // Alarm
+    
+    String param = action.substring(4);
     if (param == "activate") {
       clock.activateAlarm();
     } else if (param == "deactivate") {
@@ -70,6 +78,30 @@ void applyBadge(String action) {
         );
       }
     }
+    
+  } else if (action.startsWith("INT:")) {
+
+    // Intensity
+    
+    String param = action.substring(4);
+    if (param == "min") {
+      GC->setIntensity(Min);
+    } else if (param == "low") {
+      GC->setIntensity(Low);
+    } else if (param == "medium") {
+      GC->setIntensity(Medium);
+    } else if (param == "high") {
+      GC->setIntensity(High);
+    } else if (param == "max") {
+      GC->setIntensity(Max);
+    }
+    
+  } else if (action.startsWith("TMR:")) {
+
+    // Timer
+    
+    byte timerMinutes = action.substring(4).toInt();
+    
   }
 
   // TODO: timer, dessins, ...  
@@ -92,12 +124,16 @@ void loop() {
     }
   }
 
-  // Clock App always runs in background, even if it does not display.
-  if (currentApp != &clock) {
-    clock.run();
+  // Run ALL apps
+  for (byte a=0; a<APPS_COUNT; a++) {
+    bool needsDisplay = apps[a]->run();
+    // If current app requests a display update, call its display() method.
+    if (apps[a] == currentApp && needsDisplay) {
+      apps[a]->display(GC);
+    }
   }
-  
-  if (currentApp->run()) {
-    currentApp->display();
-  } 
+  // Ask ALL apps to display their overlay info.
+  for (byte a=0; a<APPS_COUNT; a++) {
+    apps[a]->overlay(GC);
+  }
 }

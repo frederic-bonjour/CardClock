@@ -3,6 +3,19 @@
 
 #define TONE_PIN 5
 
+// --- RTC  ------------------------------
+
+#include <Wire.h>
+#include "PCF85063TP.h"
+
+PCD85063TP clock;
+
+
+void Clock::setup() {
+  clock.begin();
+  clock.calibratBySeconds(0, -0.000041);
+}
+
 
 void Clock::display(GraphicContext* gc) {
   gc->clear();
@@ -18,27 +31,23 @@ void Clock::overlay(GraphicContext* gc) {
 
 
 bool Clock::run() {
-  static unsigned long int lastTimeMs = millis();
-  unsigned long int now = millis();
+  clock.getTime();
 
-  if ((now - lastTimeMs) >= 60 * 1000L) {
-    lastTimeMs = now;
-    
-    m++;
-    if (m > 59) {
-      m = 0;
-      h++;
-      if (h > 23) {
-        h = 0;
-      }
-    }
-
-    checkAlaram();
-
-    return true;
+  bool changed = false;
+  if (clock.minute != m) {
+    changed = true;
+    m = clock.minute;
+  }
+  if (clock.hour != h) {
+    changed = true;
+    h = clock.hour;
   }
 
-  return false;
+  if (changed) {
+    checkAlaram();
+  }
+
+  return changed;
 }
 
 

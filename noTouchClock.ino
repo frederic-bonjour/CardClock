@@ -27,11 +27,11 @@ GraphicContext *GC;
 App* currentApp;
 
 // Apps
-Clock clock;
-Timer timer;
+Clock clockApp;
+Timer timerApp;
 
 #define APPS_COUNT 2
-App* apps[APPS_COUNT] = { &clock, &timer };
+App* apps[APPS_COUNT] = { &clockApp, &timerApp };
 
 
 /**
@@ -39,17 +39,23 @@ App* apps[APPS_COUNT] = { &clock, &timer };
  */
 void setup() {
   Serial.begin(9600);
-  
+
+  // Dsplay.
   GC = new GraphicContext(32, 8);
 
+  // RFID.
   SPI.begin();        // Init SPI bus
   mfrc522.PCD_Init(); // Init MFRC522
   mfrc522.PCD_DumpVersionToSerial();
 
-  currentApp = &clock;
+  // Apps.
+  for (byte a=0; a<APPS_COUNT; a++) {
+    apps[a]->setup();
+  }
+  currentApp = &clockApp;
   currentApp->display(GC);
 
-  timer.set(20);
+  //timerApp.set(20);
 }
 
 
@@ -64,15 +70,15 @@ void applyBadge(String action) {
     
     String param = action.substring(4);
     if (param == "activate") {
-      clock.activateAlarm();
+      clockApp.activateAlarm();
     } else if (param == "deactivate") {
-      clock.deactivateAlarm();
+      clockApp.deactivateAlarm();
     } else if (param == "view") {
       // TODO
     } else {
       int p = param.indexOf(":");
       if (p > -1) {
-        clock.setAlarm(
+        clockApp.setAlarm(
           param.substring(0, p).toInt(),
           param.substring(p + 1).toInt()
         );

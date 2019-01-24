@@ -9,8 +9,8 @@
 
 class Clock : public App {
 
-  byte h = 1;
-  byte m = 58;
+  byte h = 0;
+  byte m = 0;
 
   byte alarmH = 17;
   byte alarmM = 0;
@@ -19,6 +19,7 @@ class Clock : public App {
   void checkAlaram();
 
   public:
+    void setup();
     bool run();
     void display(GraphicContext* gc);
     void overlay(GraphicContext* gc);
